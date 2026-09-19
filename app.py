@@ -5,12 +5,8 @@ from google.genai import errors
 
 def get_gemini_client(api_key_input: str = None):
   """Initializes and returns the Google Gen AI client securely."""
-  # Priority: 1. Passed user input, 2. Streamlit secrets, 3. Environment variable
-  api_key = None
-
-  if api_key_input:
-    api_key = api_key_input
-  else:
+  api_key = api_key_input
+  if not api_key:
     try:
       import streamlit as st
 
@@ -32,23 +28,22 @@ def get_gemini_client(api_key_input: str = None):
 
 
 def generate_travel_response(
-    prompt: str, travel_vibe: str, api_key_input: str = None
+    prompt: str, travel_vibe: str, budget_tier: str, api_key_input: str = None
 ) -> str:
-  """Generates a structured travel itinerary using Gemini 2.5 Flash."""
+  """Generates a structured, multi-day travel itinerary using Gemini 2.5 Flash."""
   try:
     client = get_gemini_client(api_key_input)
 
     system_instruction = (
-        "You are TravelPilot, an expert, enthusiastic, and knowledgeable AI"
-        " travel assistant. Your goal is to provide detailed, well-structured,"
-        " and engaging itineraries, local tips, and budgeting breakdowns."
-        f" The user has selected the following travel style/persona: {travel_vibe}."
-        " Tailor all recommendations strictly to match this vibe."
+        "You are TravelPilot, an expert AI travel architect. "
+        f"The user's chosen travel persona/vibe is: {travel_vibe}. "
+        f"The budget constraint is: {budget_tier}. "
+        "You must structure your response clearly using Markdown headers for each Day (e.g., '### Day 1: Arrival & Exploration') "
+        "and include specific local recommendations, estimated costs, and hidden gems."
     )
 
-    # Using the recommended gemini-2.5-flash model for fast and smart responses
     response = client.models.generate_content(
-        model="gemini-3.6-flash",
+        model="gemini-2.5-flash",
         contents=prompt,
         config={
             "system_instruction": system_instruction,
@@ -59,13 +54,8 @@ def generate_travel_response(
     return response.text
 
   except errors.APIError as e:
-    return (
-        f"⚠️ Google GenAI API Error: {e.message}"
-        " (Please check if your API key is valid.)"
-    )
+    return f"⚠️ Google GenAI API Error: {e.message}"
   except ValueError as ve:
     return f"🔑 {str(ve)}"
   except Exception as ex:
-    return (
-        f"❌ An unexpected error occurred: {str(ex)}. Please verify your setup."
-    )
+    return f"❌ An unexpected error occurred: {str(ex)}"

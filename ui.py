@@ -1,39 +1,31 @@
 from app import generate_travel_response
 import streamlit as st
 
-# 1. Page Configuration & Styling
+# Page Configuration
 st.set_page_config(
     page_title="TravelPilot | AI Travel Assistant",
     page_icon="✈️",
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="expanded",
 )
 
 # App Header
-st.title("✈️ TravelPilot")
+st.title("✈️ TravelPilot: Intelligent Itinerary Architect")
 st.caption(
-    "Your intelligent, AI-powered travel companion for customized itineraries"
-    " and trip planning."
+    "Powered by Google Gemini 2.5 Flash — Generating dynamic, persona-driven"
+    " travel experiences."
 )
 st.divider()
 
-# 2. Sidebar Setup & Controls
+# Sidebar Setup
 with st.sidebar:
-  st.header("⚙️ Trip Settings")
+  st.header("⚙️ Advanced Trip Controls")
 
-  # API Key Input (useful if local secrets aren't set)
-  api_key_input = st.text_input(
-      "Gemini API Key",
-      type="password",
-      help=(
-          "Enter your Gemini API key here if running locally without environment"
-          " secrets."
-      ),
-  )
+  api_key_input = st.text_input("Gemini API Key", type="password")
 
   st.divider()
 
-  # Innovation Vibe / Persona Selector
+  # Innovation Feature 1: Travel Persona Vibe
   travel_vibe = st.selectbox(
       "Select Travel Persona / Vibe",
       [
@@ -43,55 +35,60 @@ with st.sidebar:
           "🏛️ Culture & History",
           "🍔 Foodie & Culinary Tour",
       ],
-      help="This dynamically changes how TravelPilot customizes your itinerary!",
+  )
+
+  # Innovation Feature 2: Strict Budget Tier Selector
+  budget_tier = st.selectbox(
+      "Budget Tier Constraint",
+      ["Low-cost ($)", "Moderate ($$)", "High-end ($$$)", "Luxury ($$$$)"],
   )
 
   st.divider()
-  st.markdown("### About TravelPilot")
-  st.info(
-      "TravelPilot uses Google Gemini and custom context to generate tailored"
-      " itineraries instantly. Built for seamless travel discovery."
-  )
-
-  if st.button("🗑️ Clear Chat History", use_container_width=True):
+  if st.button("🗑️ Reset Application State", use_container_width=True):
     st.session_state.messages = []
     st.rerun()
 
-# 3. Chat Session State Initialization
+# Initialize Chat History
 if "messages" not in st.session_state:
-  st.session_state.messages = [
-      {
-          "role": "assistant",
-          "content": (
-              "Hello! I am **TravelPilot**. Where would you like to travel"
-              " next, and what kind of trip are you dreaming of?"
-          ),
-      }
-  ]
+  st.session_state.messages = []
 
-# 4. Render Conversation History
+# Render Chat History
 for message in st.session_state.messages:
   with st.chat_message(message["role"]):
     st.markdown(message["content"])
 
-# 5. Handle User Input & AI Generation
+# Handle User Input
 if prompt := st.chat_input(
-    "e.g., Plan a 3-day weekend trip to Tokyo for food tasting..."
+    "Where would you like to travel? (e.g., 3 days in Kyoto)"
 ):
-  # Append user message
   st.session_state.messages.append({"role": "user", "content": prompt})
   with st.chat_message("user"):
     st.markdown(prompt)
 
-  # Generate Assistant Response
   with st.chat_message("assistant"):
-    with st.spinner(f"Crafting your {travel_vibe} itinerary..."):
-      # Call backend generation function with prompt, selected vibe, and optional key
+    with st.spinner(
+        f"Crafting custom {travel_vibe} itinerary for a {budget_tier} budget..."
+    ):
       response_text = generate_travel_response(
-          prompt=prompt, travel_vibe=travel_vibe, api_key_input=api_key_input
+          prompt=prompt,
+          travel_vibe=travel_vibe,
+          budget_tier=budget_tier,
+          api_key_input=api_key_input,
       )
 
       st.markdown(response_text)
+
+      # Innovation UI Polish: Provide quick metrics / download options
+      st.success(
+          "✨ Itinerary successfully synthesized with persona and budget filters!"
+      )
+      st.download_button(
+          label="📥 Download Complete Itinerary (Markdown)",
+          data=response_text,
+          file_name="travelpilot_itinerary.md",
+          mime="text/markdown",
+      )
+
       st.session_state.messages.append(
           {"role": "assistant", "content": response_text}
       )
