@@ -12,14 +12,14 @@ st.set_page_config(
 # App Header
 st.title("✈️ TravelPilot: Intelligent Itinerary Architect")
 st.caption(
-    "Powered by Google Gemini 2.5 Flash — Generating dynamic, persona-driven"
+    "Powered by Google Gemini 3.6 Flash — Generating dynamic, persona-driven"
     " travel experiences."
 )
 st.divider()
 
 # Sidebar Setup
 with st.sidebar:
-  st.header("⚙️ Advanced Trip Controls")
+  st.header("⚙️ Trip Settings")
 
   api_key_input = st.text_input("Gemini API Key", type="password")
 
@@ -37,29 +37,43 @@ with st.sidebar:
       ],
   )
 
-  # Innovation Feature 2: Strict Budget Tier Selector
+  # Innovation Feature 2: Strict Budget Tier Selector (Restored & Fixed)
   budget_tier = st.selectbox(
       "Budget Tier Constraint",
       ["Low-cost ($)", "Moderate ($$)", "High-end ($$$)", "Luxury ($$$$)"],
   )
 
   st.divider()
-  if st.button("🗑️ Reset Application State", use_container_width=True):
+
+  st.markdown("### About TravelPilot")
+  st.info(
+      "TravelPilot uses Google Gemini and custom context to generate tailored"
+      " itineraries instantly. Built for seamless travel discovery."
+  )
+
+  st.divider()
+  if st.button("🗑️ Clear Chat History", use_container_width=True):
     st.session_state.messages = []
     st.rerun()
 
-# Initialize Chat History
+# Initialize Chat History with a proper greeting in session state
 if "messages" not in st.session_state:
-  st.session_state.messages = []
+  st.session_state.messages = [{
+      "role": "assistant",
+      "content": (
+          "Hello! I am **TravelPilot**. Where would you like to travel next,"
+          " and what kind of trip are you dreaming of?"
+      ),
+  }]
 
-# Render Chat History
+# Render Chat History cleanly
 for message in st.session_state.messages:
   with st.chat_message(message["role"]):
     st.markdown(message["content"])
 
 # Handle User Input
 if prompt := st.chat_input(
-    "Where would you like to travel? (e.g., 3 days in Kyoto)"
+    "e.g., Plan a 3-day weekend trip to Tokyo for food tasting..."
 ):
   st.session_state.messages.append({"role": "user", "content": prompt})
   with st.chat_message("user"):
@@ -78,10 +92,7 @@ if prompt := st.chat_input(
 
       st.markdown(response_text)
 
-      # Innovation UI Polish: Provide quick metrics / download options
-      st.success(
-          "✨ Itinerary successfully synthesized with persona and budget filters!"
-      )
+      # Innovation UI Polish: Download option
       st.download_button(
           label="📥 Download Complete Itinerary (Markdown)",
           data=response_text,
