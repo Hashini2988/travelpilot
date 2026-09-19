@@ -20,6 +20,7 @@ def generate_travel_response(prompt: str, travel_vibe: str, budget_tier: str):
         config=types.GenerateContentConfig(
             system_instruction=system_instruction,
             temperature=0.7,
+            tools=[{"type": "google_search"}],  # 10/10 Live Search Grounding
         ),
     )
     return response.text
@@ -28,8 +29,7 @@ def generate_travel_response(prompt: str, travel_vibe: str, budget_tier: str):
     if "503" in error_str or "UNAVAILABLE" in error_str:
       return (
           "⚠️ **Google Gemini API is currently experiencing temporary high"
-          " demand (503 Service Unavailable).** \n\nThis is a server-side traffic"
-          " spike on Google's end, not a bug in your code! Please wait a few"
-          " seconds and click send again."
+          " demand (503 Service Unavailable).** \n\nPlease wait a few seconds and"
+          " click send again."
       )
     return f"⚠️ Error generating itinerary: {error_str}"
