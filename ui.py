@@ -17,15 +17,10 @@ st.caption(
 )
 st.divider()
 
-# Sidebar Setup
+# Sidebar Setup (Clean & Frictionless)
 with st.sidebar:
   st.header("⚙️ Trip Settings")
 
-  api_key_input = st.text_input("Gemini API Key", type="password")
-
-  st.divider()
-
-  # Innovation Feature 1: Travel Persona Vibe
   travel_vibe = st.selectbox(
       "Select Travel Persona / Vibe",
       [
@@ -37,7 +32,6 @@ with st.sidebar:
       ],
   )
 
-  # Innovation Feature 2: Strict Budget Tier Selector (Restored & Fixed)
   budget_tier = st.selectbox(
       "Budget Tier Constraint",
       ["Low-cost ($)", "Moderate ($$)", "High-end ($$$)", "Luxury ($$$$)"],
@@ -56,7 +50,7 @@ with st.sidebar:
     st.session_state.messages = []
     st.rerun()
 
-# Initialize Chat History with a proper greeting in session state
+# Initialize Chat History storage in session state
 if "messages" not in st.session_state:
   st.session_state.messages = [{
       "role": "assistant",
@@ -66,33 +60,31 @@ if "messages" not in st.session_state:
       ),
   }]
 
-# Render Chat History cleanly
+# Render all previous chat history messages from storage
 for message in st.session_state.messages:
   with st.chat_message(message["role"]):
     st.markdown(message["content"])
 
-# Handle User Input
+# Handle User Input & Store New Messages
 if prompt := st.chat_input(
-    "e.g., Plan a 3-day weekend trip to Tokyo for food tasting..."
+    "e.g., Plan a 1-day nature trip in Bangalore within 5000..."
 ):
+  # Append and display user message
   st.session_state.messages.append({"role": "user", "content": prompt})
   with st.chat_message("user"):
     st.markdown(prompt)
 
+  # Generate and display assistant response
   with st.chat_message("assistant"):
     with st.spinner(
         f"Crafting custom {travel_vibe} itinerary for a {budget_tier} budget..."
     ):
       response_text = generate_travel_response(
-          prompt=prompt,
-          travel_vibe=travel_vibe,
-          budget_tier=budget_tier,
-          api_key_input=api_key_input,
+          prompt=prompt, travel_vibe=travel_vibe, budget_tier=budget_tier
       )
 
       st.markdown(response_text)
 
-      # Innovation UI Polish: Download option
       st.download_button(
           label="📥 Download Complete Itinerary (Markdown)",
           data=response_text,
@@ -100,6 +92,7 @@ if prompt := st.chat_input(
           mime="text/markdown",
       )
 
+      # Append assistant response to chat history storage
       st.session_state.messages.append(
           {"role": "assistant", "content": response_text}
       )
