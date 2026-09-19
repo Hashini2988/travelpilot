@@ -1,0 +1,41 @@
+{
+  "trip_name": "Tokyo Tech & Culture Escape",
+  "destination": "Tokyo, Japan",
+  "total_budget": 1200,
+  "currency": "USD",
+  "days": [
+    {
+      "day": 1,
+      "date": "2026-05-10",
+      "activities": [
+        {
+          "id": "act_1",
+          "time": "09:00 AM",
+          "name": "TeamLab Planets Tokyo",
+          "category": "Tech Art Museum",
+          "cost": 35,
+          "status": "confirmed",
+          "location": "Toyosu"
+        },
+        {
+          "id": "act_2",
+          "time": "01:00 PM",
+          "name": "Lunch at Tsukiji Outer Market",
+          "category": "Food",
+          "cost": 30,
+          "status": "confirmed",
+          "location": "Tsukiji"
+        },
+        {
+          "id": "act_3",
+          "time": "03:30 PM",
+          "name": "Akihabara Tech & Anime Shopping",
+          "category": "Shopping",
+          "cost": 50,
+          "status": "confirmed",
+          "location": "Akihabara"
+        }
+      ]
+    }
+  ]
+}
