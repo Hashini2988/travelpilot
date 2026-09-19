@@ -1,53 +1,71 @@
-import json
-import urllib.request
-import urllib.error
+import os
+from google import genai
+from google.genai import errors
 
-# Put your actual Google AI Studio API key inside the quotes below:
-API_KEY = "PUT_YOUR_API_KEY_HERE"
 
-def load_itinerary():
-    with open("trip_data.json", "r") as f:
-        return json.load(f)
+def get_gemini_client(api_key_input: str = None):
+  """Initializes and returns the Google Gen AI client securely."""
+  # Priority: 1. Passed user input, 2. Streamlit secrets, 3. Environment variable
+  api_key = None
 
-def ask_travel_agent(prompt):
-    itinerary = load_itinerary()
-    
-    system_instruction = f"""
-    You are TravelPilot, an intelligent trip planning and disruption management agent. 
-    Here is the current trip itinerary state in JSON:
-    {json.dumps(itinerary)}
-    
-    Answer the user's question accurately based on this data. If they want to simulate a disruption 
-    or change an activity, explain how you are optimizing the plan.
-    """
-    
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key={API_KEY}"
-    
-    payload = {
-        "contents": [{"parts": [{"text": f"{system_instruction}\n\nUser Question: {prompt}"}]}]
-    }
-    
-    req = urllib.request.Request(
-        url,
-        data=json.dumps(payload).encode('utf-8'),
-        headers={'Content-Type': 'application/json'},
-        method='POST'
-    )
-    
+  if api_key_input:
+    api_key = api_key_input
+  else:
     try:
-        with urllib.request.urlopen(req) as response:
-            res_data = json.loads(response.read().decode('utf-8'))
-            return res_data['candidates'][0]['content']['parts'][0]['text']
-    except urllib.error.HTTPError as e:
-        return f"API Error: {e.read().decode('utf-8')}"
+      import streamlit as st
 
-if __name__ == "__main__":
-    print("--- TravelPilot Agent Initialized (Zero-Install Mode) ---")
-    
-    query1 = "What should I do tomorrow morning and what is the cost?"
-    print(f"\nUser: {query1}")
-    print(f"TravelPilot: {ask_travel_agent(query1)}")
-    
-    query2 = "Simulate that TeamLab Planets is closed today due to maintenance. What is my backup option?"
-    print(f"\nUser: {query2}")
-    print(f"TravelPilot: {ask_travel_agent(query2)}")
+      if "GEMINI_API_KEY" in st.secrets:
+        api_key = st.secrets["GEMINI_API_KEY"]
+    except Exception:
+      pass
+
+  if not api_key:
+    api_key = os.environ.get("GEMINI_API_KEY")
+
+  if not api_key:
+    raise ValueError(
+        "Gemini API key not found. Please provide it in the sidebar or set your"
+        " environment secrets."
+    )
+
+  return genai.Client(api_key=api_key)
+
+
+def generate_travel_response(
+    prompt: str, travel_vibe: str, api_key_input: str = None
+) -> str:
+  """Generates a structured travel itinerary using Gemini 2.5 Flash."""
+  try:
+    client = get_gemini_client(api_key_input)
+
+    system_instruction = (
+        "You are TravelPilot, an expert, enthusiastic, and knowledgeable AI"
+        " travel assistant. Your goal is to provide detailed, well-structured,"
+        " and engaging itineraries, local tips, and budgeting breakdowns."
+        f" The user has selected the following travel style/persona: {travel_vibe}."
+        " Tailor all recommendations strictly to match this vibe."
+    )
+
+    # Using the recommended gemini-2.5-flash model for fast and smart responses
+    response = client.models.generate_content(
+        model="gemini-3.6-flash",
+        contents=prompt,
+        config={
+            "system_instruction": system_instruction,
+            "temperature": 0.7,
+        },
+    )
+
+    return response.text
+
+  except errors.APIError as e:
+    return (
+        f"⚠️ Google GenAI API Error: {e.message}"
+        " (Please check if your API key is valid.)"
+    )
+  except ValueError as ve:
+    return f"🔑 {str(ve)}"
+  except Exception as ex:
+    return (
+        f"❌ An unexpected error occurred: {str(ex)}. Please verify your setup."
+    )

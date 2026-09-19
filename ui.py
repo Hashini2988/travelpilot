@@ -1,82 +1,97 @@
-import json
-import urllib.request
-import urllib.error
+from app import generate_travel_response
 import streamlit as st
 
-API_KEY = "PUT_YOUR_API_KEY_HERE"  # Replace with your actual key
+# 1. Page Configuration & Styling
+st.set_page_config(
+    page_title="TravelPilot | AI Travel Assistant",
+    page_icon="✈️",
+    layout="centered",
+    initial_sidebar_state="expanded",
+)
 
-st.set_page_config(page_title="TravelPilot Agent", layout="wide")
+# App Header
+st.title("✈️ TravelPilot")
+st.caption(
+    "Your intelligent, AI-powered travel companion for customized itineraries"
+    " and trip planning."
+)
+st.divider()
 
-def load_itinerary():
-    with open("trip_data.json", "r") as f:
-        return json.load(f)
+# 2. Sidebar Setup & Controls
+with st.sidebar:
+  st.header("⚙️ Trip Settings")
 
-def ask_travel_agent(prompt):
-    itinerary = load_itinerary()
-    system_instruction = f"""
-    You are TravelPilot, an intelligent trip planning and disruption management agent. 
-    Here is the current trip itinerary state in JSON:
-    {json.dumps(itinerary)}
-    
-    Answer the user's question accurately based on this data. If they want to simulate a disruption 
-    or change an activity, explain how you are optimizing the plan.
-    """
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key={API_KEY}"
-    payload = {
-        "contents": [{"parts": [{"text": f"{system_instruction}\n\nUser Question: {prompt}"}]}]
-    }
-    req = urllib.request.Request(
-        url,
-        data=json.dumps(payload).encode('utf-8'),
-        headers={'Content-Type': 'application/json'},
-        method='POST'
-    )
-    try:
-        with urllib.request.urlopen(req) as response:
-            res_data = json.loads(response.read().decode('utf-8'))
-            return res_data['candidates'][0]['content']['parts'][0]['text']
-    except urllib.error.HTTPError as e:
-        return f"API Error: {e.read().decode('utf-8')}"
+  # API Key Input (useful if local secrets aren't set)
+  api_key_input = st.text_input(
+      "Gemini API Key",
+      type="password",
+      help=(
+          "Enter your Gemini API key here if running locally without environment"
+          " secrets."
+      ),
+  )
 
-st.title("✈️ TravelPilot: Intelligent Trip Planning & Disruption Agent")
+  st.divider()
 
-col1, col2 = st.columns([1, 1])
+  # Innovation Vibe / Persona Selector
+  travel_vibe = st.selectbox(
+      "Select Travel Persona / Vibe",
+      [
+          "🎒 Backpacker / Budget",
+          "🍷 Luxury & Leisure",
+          "⚡ Extreme Adventure",
+          "🏛️ Culture & History",
+          "🍔 Foodie & Culinary Tour",
+      ],
+      help="This dynamically changes how TravelPilot customizes your itinerary!",
+  )
 
-with col1:
-    st.subheader("📅 Live Itinerary Dashboard")
-    itinerary = load_itinerary()
-    st.write(f"**Trip:** {itinerary['trip_name']}")
-    st.write(f"**Destination:** {itinerary['destination']}")
-    st.write(f"**Total Budget:** ${itinerary['total_budget']} {itinerary['currency']}")
-    
-    for day in itinerary['days']:
-        st.markdown(f"### Day {day['day']} ({day['date']})")
-        for act in day['activities']:
-            st.info(f"**{act['time']}** - {act['name']} ({act['category']})\n\n📍 *{act['location']}* | 💰 ${act['cost']} | Status: `{act['status']}`")
+  st.divider()
+  st.markdown("### About TravelPilot")
+  st.info(
+      "TravelPilot uses Google Gemini and custom context to generate tailored"
+      " itineraries instantly. Built for seamless travel discovery."
+  )
 
-with col2:
-    st.subheader("🤖 TravelPilot Assistant Chat")
-    
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
+  if st.button("🗑️ Clear Chat History", use_container_width=True):
+    st.session_state.messages = []
+    st.rerun()
 
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+# 3. Chat Session State Initialization
+if "messages" not in st.session_state:
+  st.session_state.messages = [
+      {
+          "role": "assistant",
+          "content": (
+              "Hello! I am **TravelPilot**. Where would you like to travel"
+              " next, and what kind of trip are you dreaming of?"
+          ),
+      }
+  ]
 
-    if prompt := st.chat_input("Ask about your trip or simulate a disruption..."):
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
+# 4. Render Conversation History
+for message in st.session_state.messages:
+  with st.chat_message(message["role"]):
+    st.markdown(message["content"])
 
-        with st.chat_message("assistant"):
-            with st.spinner("TravelPilot is analyzing and re-optimizing schedule..."):
-                response = ask_travel_agent(prompt)
-                st.markdown(response)
-        st.session_state.messages.append({"role": "assistant", "content": response})
+# 5. Handle User Input & AI Generation
+if prompt := st.chat_input(
+    "e.g., Plan a 3-day weekend trip to Tokyo for food tasting..."
+):
+  # Append user message
+  st.session_state.messages.append({"role": "user", "content": prompt})
+  with st.chat_message("user"):
+    st.markdown(prompt)
 
-    if st.button("🚨 Simulate: TeamLab Planets Closed"):
-        sim_prompt = "Simulate that TeamLab Planets is closed today due to maintenance. Provide a backup option."
-        with st.spinner("Re-optimizing itinerary..."):
-            response = ask_travel_agent(sim_prompt)
-            st.success(response)
+  # Generate Assistant Response
+  with st.chat_message("assistant"):
+    with st.spinner(f"Crafting your {travel_vibe} itinerary..."):
+      # Call backend generation function with prompt, selected vibe, and optional key
+      response_text = generate_travel_response(
+          prompt=prompt, travel_vibe=travel_vibe, api_key_input=api_key_input
+      )
+
+      st.markdown(response_text)
+      st.session_state.messages.append(
+          {"role": "assistant", "content": response_text}
+      )
