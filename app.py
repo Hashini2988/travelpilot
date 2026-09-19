@@ -20,7 +20,9 @@ def generate_travel_response(prompt: str, travel_vibe: str, budget_tier: str):
         config=types.GenerateContentConfig(
             system_instruction=system_instruction,
             temperature=0.7,
-            tools=[{"type": "google_search"}],  # 10/10 Live Search Grounding
+            tools=[
+                types.Tool(google_search=types.GoogleSearch())
+            ],  # Fixed SDK tool schema configuration
         ),
     )
     return response.text
