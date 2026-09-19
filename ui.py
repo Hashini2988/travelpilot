@@ -20,7 +20,7 @@ st.divider()
 # --- MULTI-CHAT SESSION STATE INITIALIZATION ---
 if "chats" not in st.session_state:
   st.session_state.chats = {
-      "Chat 1": [{
+      "New Chat": [{
           "role": "assistant",
           "content": (
               "Hello! I am **TravelPilot**. Where would you like to travel"
@@ -30,58 +30,62 @@ if "chats" not in st.session_state:
   }
 
 if "current_chat" not in st.session_state:
-  st.session_state.current_chat = "Chat 1"
+  st.session_state.current_chat = "New Chat"
 
-# Sidebar Setup (Chat History Manager + Trip Settings)
+# Sidebar Setup (Clean & Collapsible UI)
 with st.sidebar:
-  st.header("💬 Chat History")
+  st.header("💬 Conversations")
 
   if st.button("➕ New Chat", use_container_width=True):
-    new_chat_name = f"Chat {len(st.session_state.chats) + 1}"
+    # Ensure unique names if multiple empty chats are created
+    base_name = "New Chat"
+    new_chat_name = base_name
+    counter = 1
+    while new_chat_name in st.session_state.chats:
+      counter += 1
+      new_chat_name = f"New Chat {counter}"
+
     st.session_state.chats[new_chat_name] = [{
         "role": "assistant",
         "content": (
-            f"Hello! I am **TravelPilot**. Welcome to {new_chat_name}! Where"
-            " would you like to explore?"
+            "Hello! I am **TravelPilot**. Where would you like to explore?"
         ),
     }]
     st.session_state.current_chat = new_chat_name
     st.rerun()
 
-  st.divider()
-
-  st.subheader("Your Conversations")
+  # List past chats cleanly
   chat_names = list(st.session_state.chats.keys())
   for c_name in chat_names:
-    if st.button(
-        f"📁 {c_name}"
-        if c_name != st.session_state.current_chat
-        else f"💬 ➔ {c_name}",
-        use_container_width=True,
-    ):
+    display_label = f"📁 {c_name}"
+    if c_name == st.session_state.current_chat:
+      display_label = f"💬 ➔ {c_name}"
+
+    if st.button(display_label, use_container_width=True):
       st.session_state.current_chat = c_name
       st.rerun()
 
   st.divider()
-  st.header("⚙️ Trip Settings")
 
-  travel_vibe = st.selectbox(
-      "Select Travel Persona / Vibe",
-      [
-          "🎒 Backpacker / Budget",
-          "🍷 Luxury & Leisure",
-          "⚡ Extreme Adventure",
-          "🏛️ Culture & History",
-          "🍔 Foodie & Culinary Tour",
-      ],
-  )
+  with st.expander("⚙️ Trip Settings & Persona", expanded=True):
+    travel_vibe = st.selectbox(
+        "Travel Vibe",
+        [
+            "🎒 Backpacker / Budget",
+            "🍷 Luxury & Leisure",
+            "⚡ Extreme Adventure",
+            "🏛️ Culture & History",
+            "🍔 Foodie & Culinary Tour",
+        ],
+    )
 
-  budget_tier = st.selectbox(
-      "Budget Tier Constraint",
-      ["Low-cost ($)", "Moderate ($$)", "High-end ($$$)", "Luxury ($$$$)"],
-  )
+    budget_tier = st.selectbox(
+        "Budget Tier",
+        ["Low-cost ($)", "Moderate ($$)", "High-end ($$$)", "Luxury ($$$$)"],
+    )
 
   st.divider()
+
   if st.button("🗑️ Clear Current Chat", use_container_width=True):
     st.session_state.chats[st.session_state.current_chat] = [{
         "role": "assistant",
@@ -104,6 +108,23 @@ for message in current_messages:
 if prompt := st.chat_input(
     f"Message TravelPilot ({st.session_state.current_chat})..."
 ):
+  # SMART AUTO-RENAME: If this is the first real user prompt, rename the chat title to match the input!
+  if st.session_state.current_chat.startswith("New Chat"):
+    # Clean up the prompt to make a nice title (take the first 25 characters)
+    new_title = prompt.strip().title()
+    if len(new_title) > 25:
+      new_title = new_title[:22] + "..."
+
+    # Avoid duplicate keys
+    if new_title not in st.session_state.chats:
+      st.session_state.chats[new_title] = st.session_state.chats.pop(
+          st.session_state.current_chat
+      )
+      st.session_state.current_chat = new_title
+
+  # Re-assign current messages reference after rename
+  current_messages = st.session_state.chats[st.session_state.current_chat]
+
   current_messages.append({"role": "user", "content": prompt})
   with st.chat_message("user"):
     st.markdown(prompt)
