@@ -32,11 +32,10 @@ if "chats" not in st.session_state:
 if "current_chat" not in st.session_state:
   st.session_state.current_chat = "Chat 1"
 
-# Sidebar Setup (Settings + Chat History Manager)
+# Sidebar Setup (Chat History Manager + Trip Settings)
 with st.sidebar:
   st.header("💬 Chat History")
 
-  # Button to create a new chat session
   if st.button("➕ New Chat", use_container_width=True):
     new_chat_name = f"Chat {len(st.session_state.chats) + 1}"
     st.session_state.chats[new_chat_name] = [{
@@ -51,7 +50,6 @@ with st.sidebar:
 
   st.divider()
 
-  # List past chats for easy access & switching
   st.subheader("Your Conversations")
   chat_names = list(st.session_state.chats.keys())
   for c_name in chat_names:
@@ -94,7 +92,7 @@ with st.sidebar:
     }]
     st.rerun()
 
-# Retrieve messages for the currently selected chat
+# Retrieve messages for the currently selected chat session
 current_messages = st.session_state.chats[st.session_state.current_chat]
 
 # Render all messages in the active chat

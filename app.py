@@ -1,8 +1,6 @@
-import os
 from google import genai
 from google.genai import types
 
-# Initialize the Gemini client using environment variables (Streamlit secrets)
 client = genai.Client()
 
 
