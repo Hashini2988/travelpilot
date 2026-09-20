@@ -10,37 +10,47 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# --- UNIQUE CUSTOM STYLING (Beating the generic hackathon look) ---
+# --- UNIQUE CUSTOM STYLING (Cohesive Dark Mode) ---
 st.markdown("""
     <style>
-    /* Main Background & Font Styling */
+    /* Main App Background & Text Colors */
     .stApp {
-        background-color: #0e1117;
-        color: #f0f2f6;
+        background-color: #0b0f19;
+        color: #e2e8f0;
     }
     
-    /* Custom Sidebar Styling */
+    /* Sleek Sidebar Styling */
     [data-testid="stSidebar"] {
-        background-color: #161b22;
-        border-right: 1px solid #30363d;
+        background-color: #111827;
+        border-right: 1px solid #1f2937;
     }
     
-    /* Sleek Button Styling */
+    /* Chat Input Bar Alignment and Color */
+    [data-testid="stChatInput"] {
+        background-color: #1f2937;
+        border-radius: 12px;
+        border: 1px solid #374151;
+    }
+    
+    /* Button Styling */
     .stButton>button {
+        background-color: #1f2937;
+        color: #f3f4f6;
+        border: 1px solid #374151;
         border-radius: 8px;
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
     }
     .stButton>button:hover {
-        border-color: #58a6ff;
-        color: #58a6ff;
+        background-color: #374151;
+        border-color: #60a5fa;
+        color: #60a5fa;
     }
     
-    /* Chat Bubble Enhancements */
-    [data-testid="stChatMessage"] {
-        border-radius: 12px;
-        padding: 10px;
-        margin-bottom: 10px;
+    /* Expander Box Styling */
+    .streamlit-expanderHeader {
+        background-color: #1f2937;
+        border-radius: 6px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -111,17 +121,6 @@ if "current_chat" not in st.session_state:
 
 # Sidebar Setup
 with st.sidebar:
-  st.header("🔑 Configuration")
-  user_api_key = st.text_input(
-      "Gemini API Key (Optional)",
-      type="password",
-      placeholder="Paste key if needed...",
-  )
-  if user_api_key:
-    import os
-    os.environ["GEMINI_API_KEY"] = user_api_key
-
-  st.divider()
   st.header("💬 Conversations")
 
   if st.button("➕ New Chat", use_container_width=True):
