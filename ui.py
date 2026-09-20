@@ -10,47 +10,61 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# --- UNIQUE CUSTOM STYLING (Cohesive Dark Mode) ---
+# --- TRULY UNIQUE CYBER-EMERALD GLASSMORPHISM STYLING ---
 st.markdown("""
     <style>
-    /* Main App Background & Text Colors */
+    /* Obsidian & Deep Cyber Dark Background */
     .stApp {
-        background-color: #0b0f19;
-        color: #e2e8f0;
-    }
-    
-    /* Sleek Sidebar Styling */
-    [data-testid="stSidebar"] {
-        background-color: #111827;
-        border-right: 1px solid #1f2937;
-    }
-    
-    /* Chat Input Bar Alignment and Color */
-    [data-testid="stChatInput"] {
-        background-color: #1f2937;
-        border-radius: 12px;
-        border: 1px solid #374151;
-    }
-    
-    /* Button Styling */
-    .stButton>button {
-        background-color: #1f2937;
+        background: radial-gradient(circle at top right, #064e3b 0%, #022c22 35%, #030712 100%);
         color: #f3f4f6;
-        border: 1px solid #374151;
-        border-radius: 8px;
-        font-weight: 600;
-        transition: all 0.2s ease;
+    }
+    
+    /* Sleek Translucent Sidebar */
+    [data-testid="stSidebar"] {
+        background-color: rgba(3, 7, 18, 0.95);
+        border-right: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    
+    /* Futuristic Emerald Glowing Chat Input */
+    [data-testid="stChatInput"] {
+        background-color: rgba(6, 78, 59, 0.4);
+        border-radius: 14px;
+        border: 1px solid #10b981 !important;
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+    }
+    
+    /* Custom Neon Action Buttons */
+    .stButton>button {
+        background: linear-gradient(135deg, #064e3b 0%, #022c22 100%);
+        color: #10b981;
+        border: 1px solid #059669;
+        border-radius: 10px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .stButton>button:hover {
-        background-color: #374151;
-        border-color: #60a5fa;
-        color: #60a5fa;
+        background: #10b981;
+        border-color: #34d399;
+        color: #030712;
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+        transform: translateY(-1px);
     }
     
-    /* Expander Box Styling */
+    /* Glassmorphism Expanders */
     .streamlit-expanderHeader {
-        background-color: #1f2937;
-        border-radius: 6px;
+        background-color: rgba(6, 78, 59, 0.2);
+        color: #34d399;
+        border-radius: 8px;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    
+    /* Styled Chat Bubbles */
+    [data-testid="stChatMessage"] {
+        background-color: rgba(3, 7, 18, 0.7);
+        border: 1px solid rgba(16, 185, 129, 0.15);
+        border-radius: 16px;
+        backdrop-filter: blur(10px);
     }
     </style>
 """, unsafe_allow_html=True)
