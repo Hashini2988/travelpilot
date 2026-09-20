@@ -10,61 +10,69 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# --- TRULY UNIQUE CYBER-EMERALD GLASSMORPHISM STYLING ---
+# --- HIGH-CONTRAST READABLE DARK UI STYLING ---
 st.markdown("""
     <style>
-    /* Obsidian & Deep Cyber Dark Background */
+    /* Crisp Dark Background & Bright Readable Text */
     .stApp {
-        background: radial-gradient(circle at top right, #064e3b 0%, #022c22 35%, #030712 100%);
-        color: #f3f4f6;
+        background-color: #0f172a;
+        color: #ffffff !important;
     }
     
-    /* Sleek Translucent Sidebar */
+    /* High-Contrast Sidebar */
     [data-testid="stSidebar"] {
-        background-color: rgba(3, 7, 18, 0.95);
-        border-right: 1px solid rgba(16, 185, 129, 0.2);
+        background-color: #1e293b;
+        border-right: 2px solid #334155;
     }
     
-    /* Futuristic Emerald Glowing Chat Input */
+    /* Make all sidebar and main text fully white/light grey for readability */
+    p, span, label, div, h1, h2, h3, h4, h5, h6 {
+        color: #f8fafc !important;
+    }
+    
+    /* Highly Visible Chat Input Box */
     [data-testid="stChatInput"] {
-        background-color: rgba(6, 78, 59, 0.4);
-        border-radius: 14px;
-        border: 1px solid #10b981 !important;
-        box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+        background-color: #1e293b !important;
+        border-radius: 12px;
+        border: 2px solid #3b82f6 !important;
     }
     
-    /* Custom Neon Action Buttons */
+    /* Clear, Readable Text Input and Selectboxes */
+    .stSelectbox div[data-baseweb="select"] {
+        background-color: #334155 !important;
+        color: #ffffff !important;
+        border-radius: 8px;
+    }
+    
+    /* Distinct Action Buttons */
     .stButton>button {
-        background: linear-gradient(135deg, #064e3b 0%, #022c22 100%);
-        color: #10b981;
-        border: 1px solid #059669;
-        border-radius: 10px;
+        background-color: #2563eb !important;
+        color: #ffffff !important;
+        border: 1px solid #60a5fa !important;
+        border-radius: 8px;
         font-weight: 700;
-        letter-spacing: 0.5px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.2s ease;
     }
     .stButton>button:hover {
-        background: #10b981;
-        border-color: #34d399;
-        color: #030712;
-        box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
-        transform: translateY(-1px);
+        background-color: #1d4ed8 !important;
+        border-color: #93c5fd !important;
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
     }
     
-    /* Glassmorphism Expanders */
+    /* Glass / Box Cards for Expanders */
     .streamlit-expanderHeader {
-        background-color: rgba(6, 78, 59, 0.2);
-        color: #34d399;
-        border-radius: 8px;
-        border: 1px solid rgba(16, 185, 129, 0.3);
+        background-color: #1e293b !important;
+        color: #ffffff !important;
+        border-radius: 6px;
+        border: 1px solid #475569;
     }
     
-    /* Styled Chat Bubbles */
+    /* Distinct Chat Bubbles */
     [data-testid="stChatMessage"] {
-        background-color: rgba(3, 7, 18, 0.7);
-        border: 1px solid rgba(16, 185, 129, 0.15);
-        border-radius: 16px;
-        backdrop-filter: blur(10px);
+        background-color: #1e293b !important;
+        border: 1px solid #334155;
+        border-radius: 12px;
+        color: #ffffff !important;
     }
     </style>
 """, unsafe_allow_html=True)
