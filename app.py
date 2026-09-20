@@ -1,7 +1,8 @@
 from google import genai
 from google.genai import types
 
-client = genai.Client()
+api_key = st.secrets.get("GEMINI_API_KEY") if hasattr(st, "secrets") else None
+client = genai.Client(api_key=api_key) if api_key else genai.Client()
 
 
 def generate_travel_response(prompt: str, travel_vibe: str, budget_tier: str):
