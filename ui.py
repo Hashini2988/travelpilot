@@ -2,7 +2,7 @@ from app import generate_travel_response
 import sqlite3
 import streamlit as st
 
-# Page Configuration
+# Page Configuration with sidebar forced to expand
 st.set_page_config(
     page_title="TravelPilot | Intelligent Itinerary Architect",
     page_icon="✈️",
@@ -10,69 +10,62 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# --- HIGH-CONTRAST READABLE DARK UI STYLING ---
+# --- CLEAN HIGH-CONTRAST LIGHT THEME (Perfect for Video Recording) ---
 st.markdown("""
     <style>
-    /* Crisp Dark Background & Bright Readable Text */
+    /* Clean Crisp Light Background */
     .stApp {
-        background-color: #0f172a;
-        color: #ffffff !important;
+        background-color: #f8fafc;
+        color: #0f172a !important;
     }
     
-    /* High-Contrast Sidebar */
+    /* Always Visible, Distinct Sidebar */
     [data-testid="stSidebar"] {
-        background-color: #1e293b;
-        border-right: 2px solid #334155;
+        background-color: #ffffff !important;
+        border-right: 2px solid #e2e8f0;
     }
     
-    /* Make all sidebar and main text fully white/light grey for readability */
+    /* Force all text to dark, highly readable colors */
     p, span, label, div, h1, h2, h3, h4, h5, h6 {
-        color: #f8fafc !important;
+        color: #0f172a !important;
     }
     
-    /* Highly Visible Chat Input Box */
+    /* Highly Visible Chat Input Bar */
     [data-testid="stChatInput"] {
-        background-color: #1e293b !important;
+        background-color: #ffffff !important;
         border-radius: 12px;
-        border: 2px solid #3b82f6 !important;
+        border: 2px solid #2563eb !important;
     }
     
-    /* Clear, Readable Text Input and Selectboxes */
-    .stSelectbox div[data-baseweb="select"] {
-        background-color: #334155 !important;
-        color: #ffffff !important;
-        border-radius: 8px;
-    }
-    
-    /* Distinct Action Buttons */
+    /* Clear Buttons */
     .stButton>button {
         background-color: #2563eb !important;
         color: #ffffff !important;
-        border: 1px solid #60a5fa !important;
+        border: 1px solid #1d4ed8 !important;
         border-radius: 8px;
         font-weight: 700;
         transition: all 0.2s ease;
     }
     .stButton>button:hover {
         background-color: #1d4ed8 !important;
-        border-color: #93c5fd !important;
-        box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
     }
     
-    /* Glass / Box Cards for Expanders */
+    /* Expander Box Styling */
     .streamlit-expanderHeader {
-        background-color: #1e293b !important;
-        color: #ffffff !important;
+        background-color: #f1f5f9 !important;
+        color: #0f172a !important;
         border-radius: 6px;
-        border: 1px solid #475569;
+        border: 1px solid #cbd5e1;
     }
     
     /* Distinct Chat Bubbles */
     [data-testid="stChatMessage"] {
-        background-color: #1e293b !important;
-        border: 1px solid #334155;
+        background-color: #ffffff !important;
+        border: 1px solid #e2e8f0;
         border-radius: 12px;
-        color: #ffffff !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
     </style>
 """, unsafe_allow_html=True)
